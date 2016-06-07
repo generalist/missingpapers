@@ -35,6 +35,19 @@ jq -r '.doi' working/json-soton-trimmed | sort | grep -v null | uniq -d > workin
 
 # make a little DOI duplicates report
 
+echo "NORA DOI duplicates" > nora-dup-report
+echo "" >> nora-dup-report
+echo "These repository entries have the same DOI and may thus be about the same paper:" >> nora-dup-report
+echo "" >> nora-dup-report
+
+for i in `cat working/nora-doi-dups`; do
+echo "doi:"$i":" >> nora-dup-report ;
+echo `grep "$i" working/json-nora-trimmed-oneline | cut -d , -f 2 | sed 's/"uri":"//g' | sed 's/"//g'` >> nora-dup-report ;
+echo "" >> nora-dup-report ;
+done
+
+# and the other one
+
 echo "Southampton DOI duplicates" > soton-dup-report
 echo "" >> soton-dup-report
 echo "These repository entries have the same DOI and may thus be about the same paper:" >> soton-dup-report

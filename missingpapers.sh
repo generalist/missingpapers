@@ -77,3 +77,12 @@ echo "doi:"$i":" >> open-dup-report ;
 echo `grep "$i" working/json-open-trimmed-oneline | cut -d , -f 2 | sed 's/"uri":"//g' | sed 's/"//g'` >> open-dup-report ;
 echo "" >> open-dup-report ;
 done
+
+# now build a master list of DOIs
+
+rm working/doilist
+jq -r '.doi' working/json-nora-trimmed >> working/doilist
+jq -r '.doi' working/json-soton-trimmed >> working/doilist
+jq -r '.doi' working/json-open-trimmed >> working/doilist
+
+cat working/doilist | sort | uniq > working/master-dois

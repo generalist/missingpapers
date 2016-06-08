@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# nb - this requires jquery
+# nb - this requires jq - https://stedolan.github.io/jq/
 
 # rm working/*
 

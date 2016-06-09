@@ -2,15 +2,13 @@
 
 # nb - this requires jq - https://stedolan.github.io/jq/
 
-# rm working/*
-
-# find all DOIs
-
 # all repositories will be hardcoded
 # 
 # nora
 # soton
 # open
+
+# rm working/*
 
 # all dates currently 2016 only, may push this back for final version
 # commented out to avoid spamming the same request at repos
@@ -21,7 +19,7 @@
 
 # curl "http://oro.open.ac.uk/cgi/search/archive/advanced/export_oro_JSON.js?screen=Search&dataset=archive&_action_export=1&output=JSON&exp=0%7C1%7C-date%2Fcreators_name%2Ftitle%7Carchive%7C-%7Cdate%3Adate%3AALL%3AEQ%3A2016-%7Ctype%3Atype%3AANY%3AEQ%3Aarticle%7C-%7Ceprint_status%3Aeprint_status%3AANY%3AEQ%3Aarchive%7Cmetadata_visibility%3Ametadata_visibility%3AANY%3AEQ%3Ashow&n=" > working/json-open
 
-# now get the bits we care about - this cuts the size massively! - and tidy out DOI prefixes while we're at it
+# now get the bits we care about - this cuts the size massively! - and tidy out DOI prefixes while we're at it (eprints is permissive over doi:xxx, DOI:xxx, etc)
 
 jq '.[] | {eprintid, uri, doi: .id_number, status: .full_text_status}' working/json-nora | sed s'/doi://g' | sed 's/DOI: //g' > working/json-nora-trimmed
 jq '.[] | {eprintid, uri, doi: .id_number, status: .full_text_status}' working/json-soton | sed s'/doi://g' | sed 's/DOI: //g' > working/json-soton-trimmed
@@ -79,13 +77,24 @@ echo `grep "$i" working/json-open-trimmed-oneline | cut -d , -f 2 | sed 's/"uri"
 echo "" >> open-dup-report ;
 done
 
-# now build a master list of DOIs
+# now build a master list of DOIs, omitting nulls
 
 rm working/doilist
-jq -r '.doi' working/json-nora-trimmed >> working/doilist
-jq -r '.doi' working/json-soton-trimmed >> working/doilist
-jq -r '.doi' working/json-open-trimmed >> working/doilist
+jq -r '.doi' working/json-nora-trimmed | sort | uniq >> working/doilist
+jq -r '.doi' working/json-soton-trimmed | sort | uniq >> working/doilist
+jq -r '.doi' working/json-open-trimmed | sort | uniq >> working/doilist
 
-cat working/doilist | sort | uniq > working/master-dois
+cat working/doilist | grep -v "^null" | sort | uniq > working/master-dois
+cat working/doilist | grep -v "^null" | sort | uniq -d > working/duplicate-dois
 
-# next step (ie, tomorrow) - for each item in the master-dois file, identify what its status is in the various repositories, and then identify any which differ (no point in reporting 'no-one has it'...)
+# now build the report
+
+echo -e "# This report outlines papers held by multiple repositories"
+echo -e DOI"\t"NORA"\t"Open"\t"Southampton"\t" > logfile.tsv
+
+for i in `cat working/duplicate-dois` ; 
+do grep $i working/json-nora-trimmed-oneline > working/nora-placeholder ;
+grep $i working/json-open-trimmed-oneline > working/open-placeholder ;
+grep $i working/json-soton-trimmed-oneline > working/soton-placeholder ;
+echo -e $i"\t"`jq '. | {status}' working/nora-placeholder`"\t"`jq '. | {status}' working/open-placeholder`"\t"`jq '. | {status}' working/soton-placeholder` | sed "s/{ //g" | sed "s/ }//g" | sed "s/\"//g" | sed "s/status: //g" >> logfile.tsv ;
+done

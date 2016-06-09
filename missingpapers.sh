@@ -99,3 +99,9 @@ grep $i working/json-open-trimmed-oneline > working/open-placeholder ;
 grep $i working/json-soton-trimmed-oneline > working/soton-placeholder ;
 echo -e $i"\t"`jq '. | {status}' working/nora-placeholder`"\t"`jq '. | {status}' working/open-placeholder`"\t"`jq '. | {status}' working/soton-placeholder` | sed "s/{ //g" | sed "s/ }//g" | sed "s/\"//g" | sed "s/status: //g" >> logfile.tsv ;
 done
+
+# STILL TO DO
+#
+# Work out how to handle entries with two files of differing accessibility (eg http://nora.nerc.ac.uk/513169/) - at the moment it picks one arbitratrily to work on
+# rationalise script to require less duplication
+# add years as variables

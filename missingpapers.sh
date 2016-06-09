@@ -89,8 +89,8 @@ cat working/doilist | grep -v "^null" | sort | uniq -d > working/duplicate-dois
 
 # now build the report
 
-echo -e "# This report outlines papers held by multiple repositories"
-echo -e DOI"\t"NORA"\t"Open"\t"Southampton"\t" > logfile.tsv
+echo -e "# This report outlines papers held by multiple repositories" > logfile.tsv # resetting logfile here
+echo -e DOI"\t"NORA"\t"Open"\t"Southampton"\t" >> logfile.tsv
 
 for i in `cat working/duplicate-dois` ; 
 do grep $i working/json-nora-trimmed-oneline > working/nora-placeholder ;

@@ -23,14 +23,15 @@
 
 jq '.[] | {eprintid, uri, doi: .id_number, status: .full_text_status}' working/json-nora | sed s'/doi://g' | sed 's/DOI: //g' > working/json-nora-trimmed
 jq '.[] | {eprintid, uri, doi: .id_number, status: .full_text_status}' working/json-soton | sed s'/doi://g' | sed 's/DOI: //g' > working/json-soton-trimmed
-jq '.[] | {eprintid, uri, doi: .id_number, status: .full_text_status}' working/json-open | sed s'/doi://g' | sed 's/DOI: //g' > working/json-open-trimmed
+jq '.[] | {eprintid, uri, doi, status: .full_text_status}' working/json-open | sed s'/doi://g' | sed 's/DOI: //g' > working/json-open-trimmed
+
+# nb OU uses 'doi' not 'id_number'
 
 # oneline versions for later
 
 jq -c '.' working/json-nora-trimmed > working/json-nora-trimmed-oneline
 jq -c '.' working/json-soton-trimmed > working/json-soton-trimmed-oneline
 jq -c '.' working/json-open-trimmed > working/json-open-trimmed-oneline
-
 
 # now quickly find any duplicates
 
@@ -89,7 +90,7 @@ cat working/doilist | grep -v "^null" | sort | uniq -d > working/duplicate-dois
 
 # now build the report
 
-echo -e "# This report outlines papers held by multiple repositories" > logfile.tsv # resetting logfile here
+echo -e "# This report outlines papers which overlap between multiple repositories" > logfile.tsv # resetting logfile here
 echo -e DOI"\t"NORA"\t"Open"\t"Southampton"\t" >> logfile.tsv
 
 for i in `cat working/duplicate-dois` ; 

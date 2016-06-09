@@ -10,17 +10,20 @@
 
 # rm working/*
 
-# all dates currently 2015-16 only, may make this adjustable for final version
+# set dates here
+
+YEARSTART=2015
+YEAREND=2016
+
 # commented out to avoid spamming the same request at repos
-# be careful - a full year's data might be >100MB for a large repository!
 
-# curl "http://nora.nerc.ac.uk/cgi/search/archive/advanced/export_nora_JSON.js?screen=Search&dataset=archive&_action_export=1&output=JSON&exp=0%7C1%7C-date%2Fcreators_name%2Ftitle%7Carchive%7C-%7Cdate%3Adate%3AALL%3AEQ%3A2015-2016%7Ctype%3Atype%3AANY%3AEQ%3Aarticle%7C-%7Ceprint_status%3Aeprint_status%3AANY%3AEQ%3Aarchive%7Cmetadata_visibility%3Ametadata_visibility%3AANY%3AEQ%3Ashow&n=" > working/json-nora
+curl "http://nora.nerc.ac.uk/cgi/search/archive/advanced/export_nora_JSON.js?screen=Search&dataset=archive&_action_export=1&output=JSON&exp=0%7C1%7C-date%2Fcreators_name%2Ftitle%7Carchive%7C-%7Cdate%3Adate%3AALL%3AEQ%3A$YEARSTART-$YEAREND%7Ctype%3Atype%3AANY%3AEQ%3Aarticle%7C-%7Ceprint_status%3Aeprint_status%3AANY%3AEQ%3Aarchive%7Cmetadata_visibility%3Ametadata_visibility%3AANY%3AEQ%3Ashow&n=" > working/json-nora
 
-# curl "http://eprints.soton.ac.uk/cgi/search/archive/advanced/export_eps_JSON.js?screen=Search&dataset=archive&_action_export=1&output=JSON&exp=0%7C1%7Ccontributors_name%2F-date%2Ftitle%7Carchive%7C-%7Cdate%3Adate%3AALL%3AEQ%3A2015-2016%7Ctype%3Atype%3AANY%3AEQ%3Aarticle%7C-%7Ceprint_status%3Aeprint_status%3AANY%3AEQ%3Aarchive%7Cmetadata_visibility%3Ametadata_visibility%3AANY%3AEQ%3Ashow&n=" > working/json-soton
+curl "http://eprints.soton.ac.uk/cgi/search/archive/advanced/export_eps_JSON.js?screen=Search&dataset=archive&_action_export=1&output=JSON&exp=0%7C1%7Ccontributors_name%2F-date%2Ftitle%7Carchive%7C-%7Cdate%3Adate%3AALL%3AEQ%3A$YEARSTART-$YEAREND%7Ctype%3Atype%3AANY%3AEQ%3Aarticle%7C-%7Ceprint_status%3Aeprint_status%3AANY%3AEQ%3Aarchive%7Cmetadata_visibility%3Ametadata_visibility%3AANY%3AEQ%3Ashow&n=" > working/json-soton
 
-# curl "http://oro.open.ac.uk/cgi/search/archive/advanced/export_oro_JSON.js?screen=Search&dataset=archive&_action_export=1&output=JSON&exp=0%7C1%7C-date%2Fcreators_name%2Ftitle%7Carchive%7C-%7Cdate%3Adate%3AALL%3AEQ%3A2015-2016%7Ctype%3Atype%3AANY%3AEQ%3Aarticle%7C-%7Ceprint_status%3Aeprint_status%3AANY%3AEQ%3Aarchive%7Cmetadata_visibility%3Ametadata_visibility%3AANY%3AEQ%3Ashow&n=" > working/json-open
+curl "http://oro.open.ac.uk/cgi/search/archive/advanced/export_oro_JSON.js?screen=Search&dataset=archive&_action_export=1&output=JSON&exp=0%7C1%7C-date%2Fcreators_name%2Ftitle%7Carchive%7C-%7Cdate%3Adate%3AALL%3AEQ%3A$YEARSTART-$YEAREND%7Ctype%3Atype%3AANY%3AEQ%3Aarticle%7C-%7Ceprint_status%3Aeprint_status%3AANY%3AEQ%3Aarchive%7Cmetadata_visibility%3Ametadata_visibility%3AANY%3AEQ%3Ashow&n=" > working/json-open
 
-# now get the bits we care about - this cuts the size massively! - and tidy out DOI prefixes while we're at it (eprints is permissive over doi:xxx, DOI:xxx, etc)
+# now get the bits we care about - this cuts the size massively! - and tidy out DOI prefixes while we're at it (eprints is permissive about doi:xxx, DOI:xxx, etc)
 
 jq '.[] | {eprintid, uri, doi: .id_number, status: .full_text_status}' working/json-nora | sed s'/doi://g' | sed 's/DOI: //g' > working/json-nora-trimmed
 jq '.[] | {eprintid, uri, doi: .id_number, status: .full_text_status}' working/json-soton | sed s'/doi://g' | sed 's/DOI: //g' > working/json-soton-trimmed
@@ -106,3 +109,4 @@ done
 # Work out how to handle entries with two files of differing accessibility (eg http://nora.nerc.ac.uk/513169/) - at the moment it picks one arbitratrily to work on
 # rationalise script to require less duplication
 # add years as variables
+# make the final report more helpful

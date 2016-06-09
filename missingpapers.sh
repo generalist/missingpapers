@@ -48,7 +48,7 @@ echo "" >> nora-dup-report
 
 for i in `cat working/nora-doi-dups`; do
 echo "doi:"$i":" >> nora-dup-report ;
-echo `grep "$i" working/json-nora-trimmed-oneline | cut -d , -f 2 | sed 's/"uri":"//g' | sed 's/"//g' | sed 's/ /\n/g'` >> nora-dup-report ;
+echo `grep "$i" working/json-nora-trimmed-oneline | cut -d , -f 2 | sed 's/"uri":"//g' | sed 's/"//g'` >> nora-dup-report ;
 echo "" >> nora-dup-report ;
 done
 
@@ -61,7 +61,7 @@ echo "" >> soton-dup-report
 
 for i in `cat working/soton-doi-dups`; do
 echo "doi:"$i":" >> soton-dup-report ;
-echo `grep "$i" working/json-soton-trimmed-oneline | cut -d , -f 2 | sed 's/"uri":"//g' | sed 's/"//g' | sed 's/ /\n/'` >> soton-dup-report ;
+echo `grep "$i" working/json-soton-trimmed-oneline | cut -d , -f 2 | sed 's/"uri":"//g' | sed 's/"//g'` >> soton-dup-report ;
 echo "" >> soton-dup-report ;
 done
 
@@ -74,7 +74,7 @@ echo "" >> open-dup-report
 
 for i in `cat working/open-doi-dups`; do
 echo "doi:"$i":" >> open-dup-report ;
-echo `grep "$i" working/json-open-trimmed-oneline | cut -d , -f 2 | sed 's/"uri":"//g' | sed 's/"//g' | sed 's/ /\n/'` >> open-dup-report ;
+echo `grep "$i" working/json-open-trimmed-oneline | cut -d , -f 2 | sed 's/"uri":"//g' | sed 's/"//g'` >> open-dup-report ;
 echo "" >> open-dup-report ;
 done
 
